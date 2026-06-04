@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 300" role="img" aria-labelledby="title desc">
+  <title id="title">USB Debug Guard lockup</title>
+  <desc id="desc">USB Debug Guard wordmark with the minimal shield logo.</desc>
+  <rect width="960" height="300" rx="44" fill="#F7F5EF"/>
+  <g transform="translate(64 42)">
+    <rect width="216" height="216" rx="48" fill="#111315"/>
+    <path d="M108 38 160 59v49c0 35-20 64-52 80-32-16-52-45-52-80V59Z" fill="none" stroke="#F7F5EF" stroke-width="13" stroke-linejoin="round"/>
+    <path d="M100 72h16v46h-16zM76 106h64v15H76z" fill="#E43D30"/>
+    <path d="M84 145h45v15H84z" fill="#F7F5EF"/>
+  </g>
+  <text x="330" y="126" fill="#111315" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="700" letter-spacing="0">USB Debug Guard</text>
+  <text x="334" y="182" fill="#4A4D50" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="400" letter-spacing="0">Root-only screen protection for long USB debugging sessions</text>
+  <rect x="334" y="214" width="148" height="10" fill="#E43D30"/>
+</svg>
