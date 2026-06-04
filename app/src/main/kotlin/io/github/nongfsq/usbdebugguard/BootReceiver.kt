@@ -7,12 +7,13 @@ import android.os.Build
 
 class BootReceiver : BroadcastReceiver() {
     override fun onReceive(context: Context, intent: Intent) {
-        if (!GuardPrefs.serviceEnabled(context)) return
-        val service = Intent(context, GuardService::class.java).setAction(GuardService.ACTION_START)
+        val localizedContext = LocaleHelper.wrap(context)
+        if (!GuardPrefs.serviceEnabled(localizedContext)) return
+        val service = Intent(localizedContext, GuardService::class.java).setAction(GuardService.ACTION_START)
         if (Build.VERSION.SDK_INT >= 26) {
-            context.startForegroundService(service)
+            localizedContext.startForegroundService(service)
         } else {
-            context.startService(service)
+            localizedContext.startService(service)
         }
     }
 }

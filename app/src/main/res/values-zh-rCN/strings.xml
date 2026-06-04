@@ -20,6 +20,7 @@
 
     <string name="section_protection">保护</string>
     <string name="section_behavior">行为</string>
+    <string name="section_language">语言</string>
     <string name="section_diagnostics">诊断</string>
     <string name="section_actions">操作</string>
 
@@ -35,6 +36,12 @@
     <string name="option_lock_on_disconnect_summary">恢复显示设置后使用 root 按键事件锁屏。</string>
     <string name="option_dismiss_keyguard">低亮模式跳过锁屏界面</string>
     <string name="option_dismiss_keyguard_summary">为免手动调试准备的可选备用项。不会移除设备解锁方式。</string>
+    <string name="language_system">跟随系统</string>
+    <string name="language_system_summary">使用 Android 当前应用语言或设备语言。</string>
+    <string name="language_english">English</string>
+    <string name="language_english_summary">使用英文语言包。</string>
+    <string name="language_simplified_chinese">简体中文</string>
+    <string name="language_simplified_chinese_summary">使用简体中文语言包。</string>
 
     <string name="diag_root">Root</string>
     <string name="diag_root_ready">可用</string>

@@ -39,6 +39,7 @@ mindmap
       Screen-off protection
       Material 3 interface
       English and Simplified Chinese
+      In-app language setting
     Android App
       Jetpack Compose UI
       Foreground service
@@ -72,6 +73,16 @@ The logo is an original geometric mark, not a third-party icon. The design direc
 - Notification icon: single-color vector for Android status bar rendering.
 
 For UI icons, the app uses Material Icons through Compose. Future icon options worth reviewing are Material Symbols, Lucide, Heroicons, and Phosphor Icons, but the app logo should stay original so the project has a clear identity and no icon-pack licensing ambiguity.
+
+## Language Packs
+
+USB Debug Guard ships English and Simplified Chinese resources. The app language can be set inside the app:
+
+- Follow system
+- English
+- Simplified Chinese
+
+On Android 13 and newer, the app also registers its supported locales through `locale_config`, so system-level app language controls can understand the available language packs.
 
 ## Compatibility
 
@@ -134,6 +145,7 @@ adb shell am startservice -a io.github.nongfsq.usbdebugguard.action.REFRESH -n i
 | --- | --- |
 | `app/src/main/kotlin/io/github/nongfsq/usbdebugguard` | Kotlin app source, foreground service, root state machine, USB and ADB probes. |
 | `app/src/main/res` | Android resources, strings, Material theme, launcher and notification icons. |
+| `app/src/main/res/values`, `values-zh-rCN` | English and Simplified Chinese language packs. |
 | `docs/assets` | SVG brand sources and generated raster assets for GitHub or release pages. |
 | `docs/release-notes` | Bilingual release notes used by GitHub releases. |
 | `tools` | Windows-friendly build and install helpers. |

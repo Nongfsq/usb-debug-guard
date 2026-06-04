@@ -45,6 +45,13 @@ object GuardPrefs {
         prefs(context).edit().putString("guard_mode", mode.value).apply()
     }
 
+    fun localeMode(context: Context): LocaleMode =
+        LocaleMode.from(prefs(context).getString("locale_mode", LocaleMode.System.value))
+
+    fun setLocaleMode(context: Context, mode: LocaleMode) {
+        prefs(context).edit().putString("locale_mode", mode.value).apply()
+    }
+
     fun guardedBrightness(context: Context): Int =
         prefs(context).getInt("guarded_brightness", 1).coerceIn(1, 255)
 

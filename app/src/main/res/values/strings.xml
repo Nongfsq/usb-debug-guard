@@ -22,6 +22,7 @@
 
     <string name="section_protection">Protection</string>
     <string name="section_behavior">Behavior</string>
+    <string name="section_language">Language</string>
     <string name="section_diagnostics">Diagnostics</string>
     <string name="section_actions">Actions</string>
 
@@ -37,6 +38,12 @@
     <string name="option_lock_on_disconnect_summary">Use root key events after restoring display settings.</string>
     <string name="option_dismiss_keyguard">Dismiss keyguard in dim mode</string>
     <string name="option_dismiss_keyguard_summary">Optional fallback for hands-free debugging. It never removes the device unlock method.</string>
+    <string name="language_system">Follow system</string>
+    <string name="language_system_summary">Use the current Android app language or device language.</string>
+    <string name="language_english">English</string>
+    <string name="language_english_summary">Use the English language pack.</string>
+    <string name="language_simplified_chinese">Simplified Chinese</string>
+    <string name="language_simplified_chinese_summary">Use the Simplified Chinese language pack.</string>
 
     <string name="diag_root">Root</string>
     <string name="diag_root_ready">Ready</string>

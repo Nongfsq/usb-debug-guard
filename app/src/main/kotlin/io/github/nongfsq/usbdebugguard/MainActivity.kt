@@ -2,6 +2,7 @@ package io.github.nongfsq.usbdebugguard
 
 import android.Manifest
 import android.content.Context
+import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Build
@@ -36,6 +37,7 @@ import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Smartphone
+import androidx.compose.material.icons.filled.Translate
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -80,6 +82,10 @@ class MainActivity : ComponentActivity() {
         ActivityResultContracts.RequestPermission()
     ) {}
 
+    override fun attachBaseContext(newBase: Context) {
+        super.attachBaseContext(LocaleHelper.wrap(newBase))
+    }
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
@@ -98,6 +104,7 @@ data class UiState(
     val requireAdb: Boolean,
     val lockOnDisconnect: Boolean,
     val dismissKeyguard: Boolean,
+    val localeMode: LocaleMode,
     val report: GuardReport,
     val lastAction: String,
 )
@@ -236,6 +243,41 @@ fun GuardScreen() {
                             GuardPrefs.setDismissKeyguard(context, it)
                             startGuardService(context, GuardService.ACTION_REFRESH)
                             uiState = readUiState(context, refreshProbe = false)
+                        },
+                    )
+                }
+            }
+            item {
+                SectionTitle(R.string.section_language)
+                Card(shape = RoundedCornerShape(24.dp)) {
+                    RadioItem(
+                        icon = Icons.Filled.Translate,
+                        title = stringResource(R.string.language_system),
+                        summary = stringResource(R.string.language_system_summary),
+                        selected = uiState.localeMode == LocaleMode.System,
+                        onClick = {
+                            LocaleHelper.apply(context, LocaleMode.System)
+                            context.findMainActivity()?.recreate()
+                        },
+                    )
+                    RadioItem(
+                        icon = Icons.Filled.Translate,
+                        title = stringResource(R.string.language_english),
+                        summary = stringResource(R.string.language_english_summary),
+                        selected = uiState.localeMode == LocaleMode.English,
+                        onClick = {
+                            LocaleHelper.apply(context, LocaleMode.English)
+                            context.findMainActivity()?.recreate()
+                        },
+                    )
+                    RadioItem(
+                        icon = Icons.Filled.Translate,
+                        title = stringResource(R.string.language_simplified_chinese),
+                        summary = stringResource(R.string.language_simplified_chinese_summary),
+                        selected = uiState.localeMode == LocaleMode.SimplifiedChinese,
+                        onClick = {
+                            LocaleHelper.apply(context, LocaleMode.SimplifiedChinese)
+                            context.findMainActivity()?.recreate()
                         },
                     )
                 }
@@ -484,6 +526,7 @@ private fun readUiState(context: Context, refreshProbe: Boolean): UiState {
         requireAdb = GuardPrefs.requireAdb(context),
         lockOnDisconnect = GuardPrefs.lockOnDisconnect(context),
         dismissKeyguard = GuardPrefs.dismissKeyguard(context),
+        localeMode = GuardPrefs.localeMode(context),
         report = report,
         lastAction = GuardPrefs.lastAction(context),
     )
@@ -496,4 +539,10 @@ private fun startGuardService(context: Context, action: String) {
     } else {
         context.startService(intent)
     }
+}
+
+private tailrec fun Context.findMainActivity(): MainActivity? = when (this) {
+    is MainActivity -> this
+    is ContextWrapper -> baseContext.findMainActivity()
+    else -> null
 }

@@ -39,6 +39,7 @@ mindmap
       灭屏保护
       Material 3 界面
       英文和简体中文
+      应用内语言设置
     Android 应用
       Jetpack Compose UI
       前台服务
@@ -72,6 +73,16 @@ Logo 是原创几何标识，不依赖第三方图标包。设计方向参考瑞
 - 通知图标：单色 vector，适配 Android 状态栏渲染。
 
 UI 图标目前使用 Compose 的 Material Icons。后续可以评估 Material Symbols、Lucide、Heroicons、Phosphor Icons 等高质量图标库，但 app logo 应保持原创，避免图标包授权和项目识别度问题。
+
+## 语言包
+
+USB 调试守护内置英文和简体中文资源。可以在应用内设置语言：
+
+- 跟随系统
+- English
+- 简体中文
+
+在 Android 13 及更新版本上，应用也通过 `locale_config` 注册支持的语言，因此系统级“应用语言”设置也能识别这些语言包。
 
 ## 兼容性
 
@@ -134,6 +145,7 @@ adb shell am startservice -a io.github.nongfsq.usbdebugguard.action.REFRESH -n i
 | --- | --- |
 | `app/src/main/kotlin/io/github/nongfsq/usbdebugguard` | Kotlin 应用源码、前台服务、root 状态机、USB 和 ADB 探测。 |
 | `app/src/main/res` | Android 资源、字符串、Material 主题、启动图标和通知图标。 |
+| `app/src/main/res/values`, `values-zh-rCN` | 英文和简体中文语言包。 |
 | `docs/assets` | SVG 品牌源文件，以及供 GitHub 或 release 页面使用的栅格图。 |
 | `docs/release-notes` | GitHub release 使用的中英文发布说明。 |
 | `tools` | 适合 Windows 环境的构建和安装脚本。 |
