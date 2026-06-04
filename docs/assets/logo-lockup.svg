@@ -1,14 +1,14 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 960 300" role="img" aria-labelledby="title desc">
-  <title id="title">USB Debug Guard lockup</title>
-  <desc id="desc">USB Debug Guard wordmark with the minimal shield logo.</desc>
-  <rect width="960" height="300" rx="44" fill="#F7F5EF"/>
-  <g transform="translate(64 42)">
-    <rect width="216" height="216" rx="48" fill="#111315"/>
-    <path d="M108 38 160 59v49c0 35-20 64-52 80-32-16-52-45-52-80V59Z" fill="none" stroke="#F7F5EF" stroke-width="13" stroke-linejoin="round"/>
-    <path d="M100 72h16v46h-16zM76 106h64v15H76z" fill="#E43D30"/>
-    <path d="M84 145h45v15H84z" fill="#F7F5EF"/>
-  </g>
-  <text x="330" y="126" fill="#111315" font-family="Arial, Helvetica, sans-serif" font-size="58" font-weight="700" letter-spacing="0">USB Debug Guard</text>
-  <text x="334" y="182" fill="#4A4D50" font-family="Arial, Helvetica, sans-serif" font-size="25" font-weight="400" letter-spacing="0">Root-only screen protection for long USB debugging sessions</text>
-  <rect x="334" y="214" width="148" height="10" fill="#E43D30"/>
+  <title id="title">USB Debug Guard Lockup</title>
+  <desc id="desc">USB Debug Guard wordmark with the elegant USB-C logo.</desc>
+  <rect width="960" height="300" rx="44" fill="#111315"/>
+  <svg x="64" y="42" width="216" height="216" viewBox="0 0 512 512">
+    <rect width="512" height="512" rx="112" fill="#111315"/>
+    <rect x="80" y="192" width="352" height="128" rx="64" fill="none" stroke="#F7F5EF" stroke-width="32" />
+    <rect x="128" y="240" width="160" height="32" rx="16" fill="#F7F5EF" />
+    <circle cx="352" cy="256" r="32" fill="#E43D30" />
+  </svg>
+  <text x="320" y="126" fill="#F7F5EF" font-family="Inter, -apple-system, BlinkMacSystemFont, Arial, sans-serif" font-size="58" font-weight="700" letter-spacing="-1">USB Debug Guard</text>
+  <text x="324" y="182" fill="#A0A0A0" font-family="Inter, -apple-system, BlinkMacSystemFont, Arial, sans-serif" font-size="25" font-weight="400" letter-spacing="0">Root-only screen protection for long USB debugging sessions</text>
+  <rect x="324" y="214" width="148" height="10" rx="5" fill="#E43D30"/>
 </svg>

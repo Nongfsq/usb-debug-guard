@@ -68,7 +68,7 @@ The logo is an original geometric mark, not a third-party icon. The design direc
 - Primary source: [docs/assets/logo.svg](docs/assets/logo.svg)
 - Horizontal lockup: [docs/assets/logo-lockup.svg](docs/assets/logo-lockup.svg)
 - Social preview source: [docs/assets/social-preview.svg](docs/assets/social-preview.svg)
-- Android launcher icon: adaptive icon derived from the same shield, debug bus, and screen-off bar.
+- Android launcher icon: adaptive icon derived from the same USB-C port, white data rail, and red guard indicator.
 - Notification icon: single-color vector for Android status bar rendering.
 
 For UI icons, the app uses Material Icons through Compose. Future icon options worth reviewing are Material Symbols, Lucide, Heroicons, and Phosphor Icons, but the app logo should stay original so the project has a clear identity and no icon-pack licensing ambiguity.

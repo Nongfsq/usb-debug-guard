@@ -68,7 +68,7 @@ Logo 是原创几何标识，不依赖第三方图标包。设计方向参考瑞
 - 主源文件：[docs/assets/logo.svg](docs/assets/logo.svg)
 - 横向组合：[docs/assets/logo-lockup.svg](docs/assets/logo-lockup.svg)
 - 社交预览源文件：[docs/assets/social-preview.svg](docs/assets/social-preview.svg)
-- Android 启动图标：由同一套盾牌、调试总线、灭屏横线几何派生。
+- Android 启动图标：由同一套 USB-C 端口、白色数据轨和红色守护指示点几何派生。
 - 通知图标：单色 vector，适配 Android 状态栏渲染。
 
 UI 图标目前使用 Compose 的 Material Icons。后续可以评估 Material Symbols、Lucide、Heroicons、Phosphor Icons 等高质量图标库，但 app logo 应保持原创，避免图标包授权和项目识别度问题。
