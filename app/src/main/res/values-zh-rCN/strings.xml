@@ -1,0 +1,72 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">USB 调试守护</string>
+    <string name="screen_main_title">USB 调试守护</string>
+    <string name="screen_subtitle">为长时间 USB 调试准备的 root-only 灭屏保护。</string>
+    <string name="status_protected">已保护</string>
+    <string name="status_idle">已关闭</string>
+    <string name="status_waiting_usb">等待 USB</string>
+    <string name="status_waiting_adb">等待 ADB</string>
+    <string name="status_root_required">需要 root</string>
+    <string name="status_restore_failed">恢复失败</string>
+    <string name="status_unknown">未知</string>
+    <string name="status_protected_summary">屏幕保护已生效，ADB 应保持可连接。</string>
+    <string name="status_idle_summary">守护未启用，不会改变显示设置。</string>
+    <string name="status_waiting_usb_summary">连接 USB 后会自动接管屏幕保护。</string>
+    <string name="status_waiting_adb_summary">需要先开启 ADB 调试才会开始保护。</string>
+    <string name="status_root_required_summary">请授予 root 权限，以便应用修改显示设置。</string>
+    <string name="status_restore_failed_summary">显示设置恢复未完成。断开 USB 前请查看诊断。</string>
+    <string name="status_unknown_summary">刷新诊断以确认当前状态。</string>
+
+    <string name="section_protection">保护</string>
+    <string name="section_behavior">行为</string>
+    <string name="section_diagnostics">诊断</string>
+    <string name="section_actions">操作</string>
+
+    <string name="switch_guard_enabled">启用守护</string>
+    <string name="switch_guard_summary">启动前台服务，并在 USB 调试活跃时保护屏幕。</string>
+    <string name="mode_screen_off">守护时灭屏</string>
+    <string name="mode_screen_off_summary">推荐。使用 root 命令关闭屏幕并保持 ADB 可访问。</string>
+    <string name="mode_dim_awake">低亮常亮</string>
+    <string name="mode_dim_awake_summary">备用模式，适合调试时必须保持显示唤醒的设备。</string>
+    <string name="option_require_adb">要求 ADB 调试</string>
+    <string name="option_require_adb_summary">仅在 Android 报告 ADB 调试开启后开始保护。</string>
+    <string name="option_lock_on_disconnect">USB 断开后锁屏</string>
+    <string name="option_lock_on_disconnect_summary">恢复显示设置后使用 root 按键事件锁屏。</string>
+    <string name="option_dismiss_keyguard">低亮模式跳过锁屏界面</string>
+    <string name="option_dismiss_keyguard_summary">为免手动调试准备的可选备用项。不会移除设备解锁方式。</string>
+
+    <string name="diag_root">Root</string>
+    <string name="diag_root_ready">可用</string>
+    <string name="diag_root_missing">未授予</string>
+    <string name="diag_usb">USB</string>
+    <string name="diag_usb_connected">已连接</string>
+    <string name="diag_usb_disconnected">未连接</string>
+    <string name="diag_adb">ADB</string>
+    <string name="diag_adb_enabled">已开启</string>
+    <string name="diag_adb_disabled">未开启</string>
+    <string name="diag_mode">模式</string>
+    <string name="diag_service">服务</string>
+    <string name="diag_service_on">运行中</string>
+    <string name="diag_service_off">已停止</string>
+    <string name="diag_last_action">最近操作</string>
+    <string name="diag_none">无</string>
+
+    <string name="button_test_root">测试 root</string>
+    <string name="button_lock_now">用 root 锁屏</string>
+    <string name="button_refresh">刷新</string>
+    <string name="button_turn_off">关闭</string>
+
+    <string name="notification_title">USB 调试守护</string>
+    <string name="notification_monitoring">正在监控 USB 调试</string>
+    <string name="notification_guard_active">守护已生效</string>
+    <string name="notification_waiting_usb">等待 USB</string>
+    <string name="notification_waiting_adb">等待 ADB</string>
+    <string name="notification_root_required">需要 root</string>
+    <string name="notification_restore_failed">恢复失败</string>
+    <string name="notification_restored">显示设置已恢复</string>
+    <string name="notification_channel">保护</string>
+    <string name="toast_root_ready">Root 权限可用。</string>
+    <string name="toast_root_failed">Root 权限不可用。</string>
+    <string name="toast_locked">已发送锁屏命令。</string>
+</resources>

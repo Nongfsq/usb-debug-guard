@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">USB Debug Guard</string>
+    <string name="screen_main_title">USB Debug Guard</string>
+    <string name="screen_subtitle">Root-only screen protection for long USB debugging sessions.</string>
+    <string name="fgs_special_use_subtype" translatable="false">Keeps ADB reachable while reducing screen wear during a user-enabled debugging session.</string>
+
+    <string name="status_protected">Protected</string>
+    <string name="status_idle">Off</string>
+    <string name="status_waiting_usb">Waiting for USB</string>
+    <string name="status_waiting_adb">Waiting for ADB</string>
+    <string name="status_root_required">Root required</string>
+    <string name="status_restore_failed">Restore failed</string>
+    <string name="status_unknown">Unknown</string>
+    <string name="status_protected_summary">Screen protection is active and ADB should remain reachable.</string>
+    <string name="status_idle_summary">The guard is disabled and display settings are left alone.</string>
+    <string name="status_waiting_usb_summary">Connect USB to let the guard take over automatically.</string>
+    <string name="status_waiting_adb_summary">ADB debugging must be enabled before protection starts.</string>
+    <string name="status_root_required_summary">Grant root access so the app can change display settings.</string>
+    <string name="status_restore_failed_summary">Display restore did not complete. Review diagnostics before disconnecting.</string>
+    <string name="status_unknown_summary">Refresh diagnostics to check the current state.</string>
+
+    <string name="section_protection">Protection</string>
+    <string name="section_behavior">Behavior</string>
+    <string name="section_diagnostics">Diagnostics</string>
+    <string name="section_actions">Actions</string>
+
+    <string name="switch_guard_enabled">Enable guard</string>
+    <string name="switch_guard_summary">Start the foreground service and protect the screen when USB debugging is active.</string>
+    <string name="mode_screen_off">Screen off while guarded</string>
+    <string name="mode_screen_off_summary">Recommended. Turns the screen off and keeps ADB reachable through root commands.</string>
+    <string name="mode_dim_awake">Dim but keep awake</string>
+    <string name="mode_dim_awake_summary">Fallback mode for devices that need the display awake during debugging.</string>
+    <string name="option_require_adb">Require ADB debugging</string>
+    <string name="option_require_adb_summary">Only protect after Android reports ADB debugging as enabled.</string>
+    <string name="option_lock_on_disconnect">Lock after USB disconnects</string>
+    <string name="option_lock_on_disconnect_summary">Use root key events after restoring display settings.</string>
+    <string name="option_dismiss_keyguard">Dismiss keyguard in dim mode</string>
+    <string name="option_dismiss_keyguard_summary">Optional fallback for hands-free debugging. It never removes the device unlock method.</string>
+
+    <string name="diag_root">Root</string>
+    <string name="diag_root_ready">Ready</string>
+    <string name="diag_root_missing">Not granted</string>
+    <string name="diag_usb">USB</string>
+    <string name="diag_usb_connected">Connected</string>
+    <string name="diag_usb_disconnected">Disconnected</string>
+    <string name="diag_adb">ADB</string>
+    <string name="diag_adb_enabled">Enabled</string>
+    <string name="diag_adb_disabled">Disabled</string>
+    <string name="diag_mode">Mode</string>
+    <string name="diag_service">Service</string>
+    <string name="diag_service_on">Running</string>
+    <string name="diag_service_off">Stopped</string>
+    <string name="diag_last_action">Last action</string>
+    <string name="diag_none">None</string>
+
+    <string name="button_test_root">Test root</string>
+    <string name="button_lock_now">Root lock now</string>
+    <string name="button_refresh">Refresh</string>
+    <string name="button_turn_off">Turn off</string>
+
+    <string name="notification_title">USB Debug Guard</string>
+    <string name="notification_monitoring">Monitoring USB debugging</string>
+    <string name="notification_guard_active">Guard active</string>
+    <string name="notification_waiting_usb">Waiting for USB</string>
+    <string name="notification_waiting_adb">Waiting for ADB</string>
+    <string name="notification_root_required">Root required</string>
+    <string name="notification_restore_failed">Restore failed</string>
+    <string name="notification_restored">Display settings restored</string>
+    <string name="notification_channel">Protection</string>
+    <string name="toast_root_ready">Root access works.</string>
+    <string name="toast_root_failed">Root access failed.</string>
+    <string name="toast_locked">Lock command sent.</string>
+</resources>
