@@ -1,3 +1,9 @@
+param(
+  [Parameter(Mandatory = $true)]
+  [ValidateNotNullOrEmpty()]
+  [string]$Serial
+)
+
 $ErrorActionPreference = 'Stop'
 
 $ProjectRoot = Split-Path -Parent (Split-Path -Parent $MyInvocation.MyCommand.Path)
@@ -14,7 +20,41 @@ $Adb = if ($env:ADB) {
 
 if (!(Test-Path $Apk)) {
   & (Join-Path $ProjectRoot 'tools\build.ps1')
+  if ($LASTEXITCODE -ne 0) {
+    throw "Build failed with exit code $LASTEXITCODE"
+  }
 }
 
-& $Adb install -r $Apk
-& $Adb shell monkey -p io.github.nongfsq.usbdebugguard 1
+& $Adb -s $Serial get-state | Out-Null
+if ($LASTEXITCODE -ne 0) {
+  throw "ADB target '$Serial' is unavailable"
+}
+
+$QemuFlag = (& $Adb -s $Serial shell getprop ro.kernel.qemu).Trim()
+if ($LASTEXITCODE -ne 0 -or $QemuFlag -ne '1') {
+  throw "Refusing to install on '$Serial': only Android emulators are allowed"
+}
+
+$BuildFile = Get-Content (Join-Path $ProjectRoot 'app\build.gradle.kts') -Raw
+$VersionMatch = [regex]::Match($BuildFile, 'versionCode\s*=\s*(\d+)')
+if (!$VersionMatch.Success) {
+  throw 'Could not determine expected versionCode from app/build.gradle.kts'
+}
+$ExpectedVersionCode = $VersionMatch.Groups[1].Value
+$ApkSha256 = (Get-FileHash -Algorithm SHA256 $Apk).Hash.ToLowerInvariant()
+
+& $Adb -s $Serial install -r $Apk
+if ($LASTEXITCODE -ne 0) {
+  throw "APK installation failed with exit code $LASTEXITCODE"
+}
+
+$PackageInfo = (& $Adb -s $Serial shell dumpsys package io.github.nongfsq.usbdebugguard) -join "`n"
+if ($LASTEXITCODE -ne 0 -or $PackageInfo -notmatch "versionCode=$ExpectedVersionCode(?:\s|$)") {
+  throw "Installed package does not match expected versionCode $ExpectedVersionCode"
+}
+
+Write-Host "Installed versionCode=$ExpectedVersionCode apkSha256=$ApkSha256 target=$Serial"
+& $Adb -s $Serial shell monkey -p io.github.nongfsq.usbdebugguard 1
+if ($LASTEXITCODE -ne 0) {
+  throw "App launch failed with exit code $LASTEXITCODE"
+}

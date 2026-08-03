@@ -10,6 +10,8 @@
     <string name="status_waiting_usb">Waiting for USB</string>
     <string name="status_waiting_adb">Waiting for ADB</string>
     <string name="status_root_required">Root required</string>
+    <string name="status_root_unavailable">Root unavailable</string>
+    <string name="status_circuit_open">Root safety circuit open</string>
     <string name="status_restore_failed">Restore failed</string>
     <string name="status_unknown">Unknown</string>
     <string name="status_protected_summary">Screen protection is active and ADB should remain reachable.</string>
@@ -17,12 +19,15 @@
     <string name="status_waiting_usb_summary">Connect USB to let the guard take over automatically.</string>
     <string name="status_waiting_adb_summary">ADB debugging must be enabled before protection starts.</string>
     <string name="status_root_required_summary">Grant root access so the app can change display settings.</string>
+    <string name="status_root_unavailable_summary">The last root request failed. Automatic root work is paused until you retry explicitly.</string>
+    <string name="status_circuit_open_summary">A root request timed out or stayed alive. Automatic root work is blocked to protect the battery.</string>
     <string name="status_restore_failed_summary">Display restore did not complete. Review diagnostics before disconnecting.</string>
     <string name="status_unknown_summary">Refresh diagnostics to check the current state.</string>
 
     <string name="section_protection">Protection</string>
     <string name="section_behavior">Behavior</string>
     <string name="section_language">Language</string>
+    <string name="section_updates">Updates</string>
     <string name="section_diagnostics">Diagnostics</string>
     <string name="section_actions">Actions</string>
 
@@ -44,10 +49,19 @@
     <string name="language_english_summary">Use the English language pack.</string>
     <string name="language_simplified_chinese">Simplified Chinese</string>
     <string name="language_simplified_chinese_summary">Use the Simplified Chinese language pack.</string>
+    <string name="update_current_version">Current version: %1$s</string>
+    <string name="update_manual_summary">Checks only when you tap the button. Opens the official GitHub release page to download.</string>
+    <string name="update_checking">Checking the official GitHub release…</string>
+    <string name="update_available">Version %1$s is available.</string>
+    <string name="update_up_to_date">Up to date. Latest release: %1$s.</string>
+    <string name="update_failed">Update check failed. Check the network and try again.</string>
 
     <string name="diag_root">Root</string>
     <string name="diag_root_ready">Ready</string>
     <string name="diag_root_missing">Not granted</string>
+    <string name="diag_root_not_tested">Not tested</string>
+    <string name="diag_root_unavailable">Unavailable</string>
+    <string name="diag_root_circuit_open">Circuit open</string>
     <string name="diag_usb">USB</string>
     <string name="diag_usb_connected">Connected</string>
     <string name="diag_usb_disconnected">Disconnected</string>
@@ -58,12 +72,17 @@
     <string name="diag_service">Service</string>
     <string name="diag_service_on">Running</string>
     <string name="diag_service_off">Stopped</string>
+    <string name="diag_notifications">Warnings</string>
+    <string name="diag_notifications_available">Notifications available</string>
+    <string name="diag_notifications_blocked">Notifications blocked; check this screen</string>
     <string name="diag_last_action">Last action</string>
     <string name="diag_none">None</string>
 
-    <string name="button_test_root">Test root</string>
+    <string name="button_retry_root">Retry root</string>
     <string name="button_lock_now">Root lock now</string>
     <string name="button_refresh">Refresh</string>
+    <string name="button_check_updates">Check updates</string>
+    <string name="button_open_release">Open release</string>
     <string name="button_turn_off">Turn off</string>
 
     <string name="notification_title">USB Debug Guard</string>
@@ -72,10 +91,13 @@
     <string name="notification_waiting_usb">Waiting for USB</string>
     <string name="notification_waiting_adb">Waiting for ADB</string>
     <string name="notification_root_required">Root required</string>
+    <string name="notification_root_unavailable">Root unavailable; automatic retries paused</string>
+    <string name="notification_circuit_open">Root timed out; safety circuit is open</string>
     <string name="notification_restore_failed">Restore failed</string>
     <string name="notification_restored">Display settings restored</string>
     <string name="notification_channel">Protection</string>
-    <string name="toast_root_ready">Root access works.</string>
-    <string name="toast_root_failed">Root access failed.</string>
-    <string name="toast_locked">Lock command sent.</string>
+    <string name="toast_root_retry_requested">Root retry requested.</string>
+    <string name="toast_lock_requested">Lock request sent.</string>
+    <string name="toast_notification_permission_denied">Notifications are blocked. Root and restore warnings remain visible on this screen.</string>
+    <string name="toast_no_browser">No browser is available. Open the project releases page manually.</string>
 </resources>

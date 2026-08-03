@@ -16,15 +16,17 @@
 | 构建目标 | Android SDK 36 (`compileSdk 36`, `targetSdk 36`) |
 | 已验证设备 | OnePlus CPH2723，Android 15/API 35，arm64，Linux 6.6 Android 内核 |
 | Root 模型 | 只依赖 root (`su`)，不使用设备管理器 |
-| 网络 | 无联网权限，无统计，无上传 |
+| 网络 | 仅用户主动检查 GitHub Release；无统计、无上传 |
 | 包名 | `io.github.nongfsq.usbdebugguard` |
 | 许可证 | Apache-2.0 |
 
 ## 功能
 
 - 仅在用户启用守护后运行前台服务。
-- 检测 USB 供电状态和 ADB 调试状态。
+- 通过 Android API 检测 USB 数据会话和 ADB 调试状态。
 - 使用 root (`su`) 保存、修改和恢复显示设置。
+- 第一次 Root 失败后持久熔断，不进行无限自动重试。
+- 仅在用户点击“检查更新”后查询官方 GitHub Releases API。
 - 默认模式会在守护时灭屏，同时保持 USB 调试可访问。
 - 备用的低亮常亮模式会把亮度降到最低并保持屏幕唤醒。
 - 停止守护或 USB 断开后恢复原显示状态。
@@ -46,9 +48,11 @@ mindmap
       守护状态机
       USB 和 ADB 探测
       Root shell 适配层
+      手动 GitHub 更新检查
     安全边界
       不用设备管理器
-      不联网
+      不进行后台联网
+      只打开官方 GitHub 发布页
       恢复显示设置
       ADB action 由 DUMP 限制
     品牌
@@ -93,13 +97,19 @@ USB 调试守护不按 CPU 架构或 Android 内核版本拆分包。APK 是通�
 - Android 8.0 或更新版本。
 - 来自 Magisk、KernelSU 等 root 管理器的可用 `su`。
 - root 环境中可运行 `settings`、`input`，以及可选的 `wm`。
-- USB 状态可以通过 Android API 或 root 可读的 sysfs 路径检测。
+- Android 能通过 USB 状态广播报告 USB 数据连接。
 
 Root 不代表所有设备都 100% 兼容。OEM 系统、SELinux 策略、root 授权弹窗、USB 供电状态上报、锁屏行为都可能影响结果。
 
 ## 构建
 
 安装 Android SDK 36，然后运行：
+
+```sh
+./gradlew assembleDebug
+```
+
+Windows 辅助脚本：
 
 ```powershell
 .\tools\build.ps1
@@ -120,13 +130,13 @@ Release 构建：
 ## 安装
 
 ```powershell
-.\tools\install.ps1
+.\tools\install.ps1 -Serial emulator-5580
 ```
 
 或者手动安装：
 
 ```powershell
-adb install -r app\build\outputs\apk\debug\app-debug.apk
+adb -s emulator-5580 install -r app\build\outputs\apk\debug\app-debug.apk
 ```
 
 ## ADB 控制
@@ -163,7 +173,7 @@ adb shell am startservice -a io.github.nongfsq.usbdebugguard.action.REFRESH -n i
 
 ## 隐私
 
-USB 调试守护不收集分析数据、不联网、不上传日志，也不保存个人信息。详见 [PRIVACY.md](PRIVACY.md)。
+USB 调试守护不收集分析数据，也不上传日志。只有用户点击“检查更新”时才会访问官方 GitHub Releases API，并可由用户选择打开官方发布页。详见 [PRIVACY.md](PRIVACY.md)。
 
 ## 安全
 

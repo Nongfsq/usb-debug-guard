@@ -1,10 +1,12 @@
 package io.github.nongfsq.usbdebugguard
 
 import android.Manifest
+import android.content.ActivityNotFoundException
 import android.content.Context
 import android.content.ContextWrapper
 import android.content.Intent
 import android.content.pm.PackageManager
+import android.net.Uri
 import android.os.Build
 import android.os.Bundle
 import android.widget.Toast
@@ -38,6 +40,7 @@ import androidx.compose.material.icons.filled.Security
 import androidx.compose.material.icons.filled.Settings
 import androidx.compose.material.icons.filled.Smartphone
 import androidx.compose.material.icons.filled.Translate
+import androidx.compose.material.icons.filled.SystemUpdate
 import androidx.compose.material.icons.filled.Warning
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
@@ -58,7 +61,7 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -72,15 +75,22 @@ import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.Lifecycle
+import androidx.lifecycle.LifecycleEventObserver
+import androidx.lifecycle.compose.LocalLifecycleOwner
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
 class MainActivity : ComponentActivity() {
     internal val notificationPermission = registerForActivityResult(
         ActivityResultContracts.RequestPermission()
-    ) {}
+    ) { granted ->
+        GuardPrefs.setLastAction(this, if (granted) "notification-permission:granted" else "notification-permission:denied")
+        if (!granted) {
+            Toast.makeText(this, R.string.toast_notification_permission_denied, Toast.LENGTH_LONG).show()
+        }
+    }
 
     override fun attachBaseContext(newBase: Context) {
         super.attachBaseContext(LocaleHelper.wrap(newBase))
@@ -107,6 +117,7 @@ data class UiState(
     val localeMode: LocaleMode,
     val report: GuardReport,
     val lastAction: String,
+    val notificationsAvailable: Boolean,
 )
 
 @Composable
@@ -134,15 +145,41 @@ fun UsbDebugGuardTheme(content: @Composable () -> Unit) {
 @Composable
 fun GuardScreen() {
     val context = LocalContext.current
+    val lifecycleOwner = LocalLifecycleOwner.current
     val scope = rememberCoroutineScope()
     var uiState by remember { mutableStateOf(readUiState(context, refreshProbe = false)) }
+    var updateChecking by remember { mutableStateOf(false) }
+    var updateResult by remember { mutableStateOf<UpdateCheckResult?>(null) }
+    val updateChecker = remember {
+        GitHubReleaseUpdateChecker(
+            feedClient = GitHubReleaseFeedClient("USB-Debug-Guard/${BuildConfig.VERSION_NAME}"),
+            currentVersion = BuildConfig.VERSION_NAME,
+        )
+    }
 
-    LaunchedEffect(Unit) {
-        while (true) {
-            uiState = withContext(Dispatchers.IO) {
-                readUiState(context, refreshProbe = true)
+    DisposableEffect(context, lifecycleOwner) {
+        val preferences = GuardPrefs.prefs(context)
+        val preferenceListener = android.content.SharedPreferences.OnSharedPreferenceChangeListener { _, _ ->
+            scope.launch {
+                uiState = withContext(Dispatchers.IO) {
+                    readUiState(context, refreshProbe = true)
+                }
             }
-            delay(2_000L)
+        }
+        val lifecycleObserver = LifecycleEventObserver { _, event ->
+            if (event == Lifecycle.Event.ON_RESUME) {
+                scope.launch {
+                    uiState = withContext(Dispatchers.IO) {
+                        readUiState(context, refreshProbe = true)
+                    }
+                }
+            }
+        }
+        preferences.registerOnSharedPreferenceChangeListener(preferenceListener)
+        lifecycleOwner.lifecycle.addObserver(lifecycleObserver)
+        onDispose {
+            lifecycleOwner.lifecycle.removeObserver(lifecycleObserver)
+            preferences.unregisterOnSharedPreferenceChangeListener(preferenceListener)
         }
     }
 
@@ -283,12 +320,82 @@ fun GuardScreen() {
                 }
             }
             item {
+                SectionTitle(R.string.section_updates)
+                Card(shape = RoundedCornerShape(24.dp)) {
+                    ListItem(
+                        leadingContent = { Icon(Icons.Filled.SystemUpdate, contentDescription = null) },
+                        headlineContent = {
+                            Text(
+                                stringResource(R.string.update_current_version, BuildConfig.VERSION_NAME),
+                                fontWeight = FontWeight.SemiBold,
+                            )
+                        },
+                        supportingContent = {
+                            Text(
+                                when {
+                                    updateChecking -> stringResource(R.string.update_checking)
+                                    updateResult is UpdateCheckResult.Available -> stringResource(
+                                        R.string.update_available,
+                                        (updateResult as UpdateCheckResult.Available).version,
+                                    )
+                                    updateResult is UpdateCheckResult.UpToDate -> stringResource(
+                                        R.string.update_up_to_date,
+                                        (updateResult as UpdateCheckResult.UpToDate).latestVersion,
+                                    )
+                                    updateResult is UpdateCheckResult.Failed -> stringResource(R.string.update_failed)
+                                    else -> stringResource(R.string.update_manual_summary)
+                                }
+                            )
+                        },
+                    )
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(horizontal = 16.dp, vertical = 12.dp),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp),
+                    ) {
+                        FilledTonalButton(
+                            modifier = Modifier.weight(1f),
+                            enabled = !updateChecking,
+                            onClick = {
+                                updateChecking = true
+                                scope.launch {
+                                    updateResult = withContext(Dispatchers.IO) { updateChecker.check() }
+                                    updateChecking = false
+                                }
+                            },
+                        ) {
+                            Text(stringResource(R.string.button_check_updates))
+                        }
+                        val available = updateResult as? UpdateCheckResult.Available
+                        if (available != null) {
+                            Button(
+                                modifier = Modifier.weight(1f),
+                                onClick = {
+                                    openReleasePage(context, available.releaseUrl)
+                                },
+                            ) {
+                                Text(stringResource(R.string.button_open_release))
+                            }
+                        }
+                    }
+                }
+            }
+            item {
                 SectionTitle(R.string.section_diagnostics)
                 Card(shape = RoundedCornerShape(24.dp)) {
                     DiagnosticItem(
                         icon = Icons.Filled.Bolt,
                         label = stringResource(R.string.diag_root),
-                        value = stringResource(if (uiState.report.probe.rootReady) R.string.diag_root_ready else R.string.diag_root_missing),
+                        value = stringResource(
+                            when {
+                                uiState.report.circuit.open -> R.string.diag_root_circuit_open
+                                uiState.report.circuit.lastOutcome == RootOutcome.Success -> R.string.diag_root_ready
+                                uiState.report.circuit.lastOutcome == RootOutcome.Denied -> R.string.diag_root_missing
+                                uiState.report.circuit.lastOutcome == RootOutcome.Exception -> R.string.diag_root_unavailable
+                                else -> R.string.diag_root_not_tested
+                            }
+                        ),
                     )
                     DiagnosticItem(
                         icon = Icons.Filled.Smartphone,
@@ -311,6 +418,17 @@ fun GuardScreen() {
                         value = stringResource(if (uiState.serviceEnabled) R.string.diag_service_on else R.string.diag_service_off),
                     )
                     DiagnosticItem(
+                        icon = Icons.Filled.Warning,
+                        label = stringResource(R.string.diag_notifications),
+                        value = stringResource(
+                            if (uiState.notificationsAvailable) {
+                                R.string.diag_notifications_available
+                            } else {
+                                R.string.diag_notifications_blocked
+                            }
+                        ),
+                    )
+                    DiagnosticItem(
                         icon = Icons.Filled.Refresh,
                         label = stringResource(R.string.diag_last_action),
                         value = uiState.lastAction.ifBlank { stringResource(R.string.diag_none) },
@@ -325,34 +443,19 @@ fun GuardScreen() {
                 ) {
                     FilledTonalButton(
                         modifier = Modifier.weight(1f),
+                        enabled = uiState.report.circuit.open && !uiState.report.circuit.manualRetryConsumed,
                         onClick = {
-                            scope.launch {
-                                val result = withContext(Dispatchers.IO) {
-                                    GuardStateMachine(context).testRoot()
-                                }
-                                Toast.makeText(
-                                    context,
-                                    if (result.ok) R.string.toast_root_ready else R.string.toast_root_failed,
-                                    Toast.LENGTH_SHORT,
-                                ).show()
-                                uiState = withContext(Dispatchers.IO) {
-                                    readUiState(context, refreshProbe = true)
-                                }
-                            }
+                            startGuardService(context, GuardService.ACTION_RETRY_ROOT)
+                            Toast.makeText(context, R.string.toast_root_retry_requested, Toast.LENGTH_SHORT).show()
                         },
                     ) {
-                        Text(stringResource(R.string.button_test_root))
+                        Text(stringResource(R.string.button_retry_root))
                     }
                     Button(
                         modifier = Modifier.weight(1f),
                         onClick = {
-                            scope.launch {
-                                withContext(Dispatchers.IO) {
-                                    GuardStateMachine(context).lockNow()
-                                }
-                                Toast.makeText(context, R.string.toast_locked, Toast.LENGTH_SHORT).show()
-                                uiState = readUiState(context, refreshProbe = false)
-                            }
+                            startGuardService(context, GuardService.ACTION_LOCK_NOW)
+                            Toast.makeText(context, R.string.toast_lock_requested, Toast.LENGTH_SHORT).show()
                         },
                     ) {
                         Text(stringResource(R.string.button_lock_now))
@@ -376,7 +479,7 @@ fun GuardScreen() {
 }
 
 private fun requestNotificationPermissionIfNeeded(context: Context) {
-    val activity = context as? MainActivity ?: return
+    val activity = context.findMainActivity() ?: return
     if (Build.VERSION.SDK_INT >= 33 &&
         activity.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) != PackageManager.PERMISSION_GRANTED
     ) {
@@ -388,7 +491,10 @@ private fun requestNotificationPermissionIfNeeded(context: Context) {
 private fun StatusCard(status: GuardStatus) {
     val statusColor = when (status) {
         GuardStatus.Protected -> MaterialTheme.colorScheme.primary
-        GuardStatus.RootRequired, GuardStatus.RestoreFailed -> MaterialTheme.colorScheme.error
+        GuardStatus.RootRequired,
+        GuardStatus.RootUnavailable,
+        GuardStatus.CircuitOpen,
+        GuardStatus.RestoreFailed -> MaterialTheme.colorScheme.error
         GuardStatus.WaitingUsb, GuardStatus.WaitingAdb -> MaterialTheme.colorScheme.tertiary
         else -> MaterialTheme.colorScheme.secondary
     }
@@ -496,6 +602,8 @@ private fun statusTitle(status: GuardStatus): Int = when (status) {
     GuardStatus.WaitingUsb -> R.string.status_waiting_usb
     GuardStatus.WaitingAdb -> R.string.status_waiting_adb
     GuardStatus.RootRequired -> R.string.status_root_required
+    GuardStatus.RootUnavailable -> R.string.status_root_unavailable
+    GuardStatus.CircuitOpen -> R.string.status_circuit_open
     GuardStatus.RestoreFailed -> R.string.status_restore_failed
     GuardStatus.Unknown -> R.string.status_unknown
 }
@@ -506,6 +614,8 @@ private fun statusSummary(status: GuardStatus): Int = when (status) {
     GuardStatus.WaitingUsb -> R.string.status_waiting_usb_summary
     GuardStatus.WaitingAdb -> R.string.status_waiting_adb_summary
     GuardStatus.RootRequired -> R.string.status_root_required_summary
+    GuardStatus.RootUnavailable -> R.string.status_root_unavailable_summary
+    GuardStatus.CircuitOpen -> R.string.status_circuit_open_summary
     GuardStatus.RestoreFailed -> R.string.status_restore_failed_summary
     GuardStatus.Unknown -> R.string.status_unknown_summary
 }
@@ -516,7 +626,8 @@ private fun readUiState(context: Context, refreshProbe: Boolean): UiState {
     } else {
         GuardReport(
             status = GuardPrefs.lastStatus(context),
-            probe = UsbAdbState(usbConnected = false, adbEnabled = false, rootReady = false),
+            probe = UsbAdbState(usbConnected = false, adbEnabled = false),
+            circuit = AndroidRootSafetyStore(context).snapshot(),
         )
     }
     return UiState(
@@ -529,15 +640,21 @@ private fun readUiState(context: Context, refreshProbe: Boolean): UiState {
         localeMode = GuardPrefs.localeMode(context),
         report = report,
         lastAction = GuardPrefs.lastAction(context),
+        notificationsAvailable = Build.VERSION.SDK_INT < 33 ||
+            context.checkSelfPermission(Manifest.permission.POST_NOTIFICATIONS) == PackageManager.PERMISSION_GRANTED,
     )
 }
 
 private fun startGuardService(context: Context, action: String) {
     val intent = Intent(context, GuardService::class.java).setAction(action)
-    if (Build.VERSION.SDK_INT >= 26) {
-        context.startForegroundService(intent)
-    } else {
-        context.startService(intent)
+    context.startForegroundService(intent)
+}
+
+private fun openReleasePage(context: Context, url: String) {
+    try {
+        context.startActivity(Intent(Intent.ACTION_VIEW, Uri.parse(url)))
+    } catch (_: ActivityNotFoundException) {
+        Toast.makeText(context, R.string.toast_no_browser, Toast.LENGTH_LONG).show()
     }
 }
 

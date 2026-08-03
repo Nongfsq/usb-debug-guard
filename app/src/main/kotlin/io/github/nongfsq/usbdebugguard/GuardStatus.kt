@@ -6,6 +6,8 @@ enum class GuardStatus(val value: String) {
     WaitingUsb("waiting_usb"),
     WaitingAdb("waiting_adb"),
     RootRequired("root_required"),
+    RootUnavailable("root_unavailable"),
+    CircuitOpen("circuit_open"),
     RestoreFailed("restore_failed"),
     Unknown("unknown");
 
