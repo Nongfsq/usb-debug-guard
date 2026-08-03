@@ -139,6 +139,8 @@ Release 构建：
 adb -s emulator-5580 install -r app\build\outputs\apk\debug\app-debug.apk
 ```
 
+**v0.1.2 迁移：**v0.1.3 使用新的发布签名证书。请先关闭守护并确认显示设置已恢复，卸载 v0.1.2，再安装 v0.1.3。详见 [docs/RELEASE.md](docs/RELEASE.md)。
+
 ## ADB 控制
 
 前台服务暴露仅 shell 可调用的 action，并通过 `android.permission.DUMP` 限制普通第三方应用调用：

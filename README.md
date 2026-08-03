@@ -139,6 +139,8 @@ Or install manually:
 adb -s emulator-5580 install -r app\build\outputs\apk\debug\app-debug.apk
 ```
 
+**v0.1.2 migration:** v0.1.3 uses a new release signing certificate. Disable the guard and confirm display restoration, uninstall v0.1.2, then install v0.1.3. See [docs/RELEASE.md](docs/RELEASE.md).
+
 ## ADB Control
 
 The foreground service exposes shell-only actions guarded by `android.permission.DUMP`:
