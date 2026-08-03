@@ -16,15 +16,17 @@ Root-only Android screen protection for long USB debugging sessions. It keeps AD
 | Build target | Android SDK 36 (`compileSdk 36`, `targetSdk 36`) |
 | Verified device | OnePlus CPH2723, Android 15/API 35, arm64, Linux 6.6 Android kernel |
 | Root model | Root-only through `su`; no Device Admin |
-| Networking | No internet permission, no analytics, no uploads |
+| Networking | User-initiated GitHub release check only; no analytics or uploads |
 | Package | `io.github.nongfsq.usbdebugguard` |
 | License | Apache-2.0 |
 
 ## What It Does
 
 - Runs a foreground service only after the user enables the guard.
-- Detects USB power and ADB debugging state.
+- Detects USB data-session and ADB debugging state through Android APIs.
 - Uses root (`su`) to save, change, and restore display settings.
+- Opens a persistent safety circuit after the first Root failure instead of retrying indefinitely.
+- Checks the official GitHub Releases API only when the user taps **Check updates**.
 - Default mode turns the screen off while keeping USB debugging reachable.
 - Optional dim-awake fallback keeps the display awake at minimum brightness.
 - Restores the previous display state when protection stops or USB disconnects.
@@ -46,9 +48,11 @@ mindmap
       Guard state machine
       USB and ADB probes
       Root shell adapter
+      Manual GitHub update check
     Safety
       No Device Admin
-      No network access
+      No background networking
+      Official GitHub release link only
       Restore display settings
       ADB actions restricted by DUMP
     Brand
@@ -93,13 +97,19 @@ Expected environment:
 - Android 8.0 or newer.
 - A working `su` implementation from a root manager such as Magisk or KernelSU.
 - Root can run `settings`, `input`, and optionally `wm`.
-- USB state can be detected through Android APIs or root-readable sysfs paths.
+- USB data state can be detected through Android's USB state broadcast.
 
 Root does not guarantee every device behaves the same way. OEM firmware, SELinux policy, root manager prompts, USB power reporting, and lock-screen behavior can all affect results.
 
 ## Build
 
 Install Android SDK 36, then run:
+
+```sh
+./gradlew assembleDebug
+```
+
+Windows helper:
 
 ```powershell
 .\tools\build.ps1
@@ -120,13 +130,13 @@ For a release build:
 ## Install
 
 ```powershell
-.\tools\install.ps1
+.\tools\install.ps1 -Serial emulator-5580
 ```
 
 Or install manually:
 
 ```powershell
-adb install -r app\build\outputs\apk\debug\app-debug.apk
+adb -s emulator-5580 install -r app\build\outputs\apk\debug\app-debug.apk
 ```
 
 ## ADB Control
@@ -163,7 +173,7 @@ This README deliberately uses a few maintainable documentation tools:
 
 ## Privacy
 
-USB Debug Guard does not collect analytics, does not connect to the network, does not upload logs, and does not store personal data. See [PRIVACY.md](PRIVACY.md).
+USB Debug Guard does not collect analytics or upload logs. Network access occurs only after the user taps **Check updates**, and is limited to the official GitHub Releases API and release page. See [PRIVACY.md](PRIVACY.md).
 
 ## Security
 

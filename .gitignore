@@ -24,3 +24,9 @@ captures/
 screenshots/
 verification/
 release/
+
+# Local validation artifacts and incident-derived reports may contain host paths.
+/outputs/
+
+# Local incident evidence; contains device logs and private environment data.
+/USB-Debug-Guard-Incident-2026-08-01/

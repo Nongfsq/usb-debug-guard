@@ -8,6 +8,8 @@
     <string name="status_waiting_usb">等待 USB</string>
     <string name="status_waiting_adb">等待 ADB</string>
     <string name="status_root_required">需要 root</string>
+    <string name="status_root_unavailable">Root 不可用</string>
+    <string name="status_circuit_open">Root 安全熔断已开启</string>
     <string name="status_restore_failed">恢复失败</string>
     <string name="status_unknown">未知</string>
     <string name="status_protected_summary">屏幕保护已生效，ADB 应保持可连接。</string>
@@ -15,12 +17,15 @@
     <string name="status_waiting_usb_summary">连接 USB 后会自动接管屏幕保护。</string>
     <string name="status_waiting_adb_summary">需要先开启 ADB 调试才会开始保护。</string>
     <string name="status_root_required_summary">请授予 root 权限，以便应用修改显示设置。</string>
+    <string name="status_root_unavailable_summary">最近一次 root 请求失败。自动 root 工作已暂停，等待你明确重试。</string>
+    <string name="status_circuit_open_summary">Root 请求超时或进程仍存活。为保护电池，自动 root 工作已阻断。</string>
     <string name="status_restore_failed_summary">显示设置恢复未完成。断开 USB 前请查看诊断。</string>
     <string name="status_unknown_summary">刷新诊断以确认当前状态。</string>
 
     <string name="section_protection">保护</string>
     <string name="section_behavior">行为</string>
     <string name="section_language">语言</string>
+    <string name="section_updates">更新</string>
     <string name="section_diagnostics">诊断</string>
     <string name="section_actions">操作</string>
 
@@ -42,10 +47,19 @@
     <string name="language_english_summary">使用英文语言包。</string>
     <string name="language_simplified_chinese">简体中文</string>
     <string name="language_simplified_chinese_summary">使用简体中文语言包。</string>
+    <string name="update_current_version">当前版本：%1$s</string>
+    <string name="update_manual_summary">仅在点击按钮时检查，并打开官方 GitHub Release 页面下载。</string>
+    <string name="update_checking">正在检查官方 GitHub Release…</string>
+    <string name="update_available">发现新版本 %1$s。</string>
+    <string name="update_up_to_date">已是最新版本，当前 Release 为 %1$s。</string>
+    <string name="update_failed">检查更新失败，请确认网络后重试。</string>
 
     <string name="diag_root">Root</string>
     <string name="diag_root_ready">可用</string>
     <string name="diag_root_missing">未授予</string>
+    <string name="diag_root_not_tested">未测试</string>
+    <string name="diag_root_unavailable">不可用</string>
+    <string name="diag_root_circuit_open">熔断已开启</string>
     <string name="diag_usb">USB</string>
     <string name="diag_usb_connected">已连接</string>
     <string name="diag_usb_disconnected">未连接</string>
@@ -56,12 +70,17 @@
     <string name="diag_service">服务</string>
     <string name="diag_service_on">运行中</string>
     <string name="diag_service_off">已停止</string>
+    <string name="diag_notifications">警告提示</string>
+    <string name="diag_notifications_available">通知可用</string>
+    <string name="diag_notifications_blocked">通知已阻止，请查看本页面</string>
     <string name="diag_last_action">最近操作</string>
     <string name="diag_none">无</string>
 
-    <string name="button_test_root">测试 root</string>
+    <string name="button_retry_root">重试 Root</string>
     <string name="button_lock_now">用 root 锁屏</string>
     <string name="button_refresh">刷新</string>
+    <string name="button_check_updates">检查更新</string>
+    <string name="button_open_release">打开发布页</string>
     <string name="button_turn_off">关闭</string>
 
     <string name="notification_title">USB 调试守护</string>
@@ -70,10 +89,13 @@
     <string name="notification_waiting_usb">等待 USB</string>
     <string name="notification_waiting_adb">等待 ADB</string>
     <string name="notification_root_required">需要 root</string>
+    <string name="notification_root_unavailable">Root 不可用，自动重试已暂停</string>
+    <string name="notification_circuit_open">Root 已超时，安全熔断已开启</string>
     <string name="notification_restore_failed">恢复失败</string>
     <string name="notification_restored">显示设置已恢复</string>
     <string name="notification_channel">保护</string>
-    <string name="toast_root_ready">Root 权限可用。</string>
-    <string name="toast_root_failed">Root 权限不可用。</string>
-    <string name="toast_locked">已发送锁屏命令。</string>
+    <string name="toast_root_retry_requested">已请求重试 Root。</string>
+    <string name="toast_lock_requested">已发送锁屏请求。</string>
+    <string name="toast_notification_permission_denied">通知已被阻止。Root 与恢复警告仍会显示在本页面。</string>
+    <string name="toast_no_browser">没有可用浏览器，请手动打开项目 Release 页面。</string>
 </resources>
