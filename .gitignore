@@ -28,5 +28,8 @@ release/
 # Local validation artifacts and incident-derived reports may contain host paths.
 /outputs/
 
-# Local incident evidence; contains device logs and private environment data.
-/USB-Debug-Guard-Incident-2026-08-01/
+# Local incident evidence and device exports; may contain identifiers and logs.
+/USB-Debug-Guard-Incident-*/
+/device-logs/
+/private-test-data/
+/bugreports/
