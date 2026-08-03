@@ -5,25 +5,60 @@ import android.app.NotificationChannel
 import android.app.NotificationManager
 import android.app.PendingIntent
 import android.app.Service
+import android.content.BroadcastReceiver
 import android.content.Context
 import android.content.Intent
+import android.content.IntentFilter
+import android.database.ContentObserver
 import android.os.Build
 import android.os.Handler
 import android.os.HandlerThread
 import android.os.IBinder
-import android.os.Looper
+import android.provider.Settings
 import androidx.core.app.NotificationCompat
+import java.util.concurrent.atomic.AtomicBoolean
+
+data class NotificationState(
+    val status: GuardStatus,
+    val circuitOpen: Boolean,
+    val failureCount: Int,
+    val lastOutcome: RootOutcome?,
+)
+
+class NotificationStateTracker {
+    private var last: NotificationState? = null
+
+    fun shouldNotify(next: NotificationState): Boolean {
+        if (last == next) return false
+        last = next
+        return true
+    }
+}
 
 class GuardService : Service() {
     private lateinit var workerThread: HandlerThread
     private lateinit var workerHandler: Handler
     private lateinit var stateMachine: GuardStateMachine
+    private lateinit var adbObserver: ContentObserver
+    private val notificationTracker = NotificationStateTracker()
+    private val pendingForceRepair = AtomicBoolean(false)
 
-    private val tick = object : Runnable {
-        override fun run() {
-            val report = stateMachine.tick()
-            updateNotification(report.status)
-            workerHandler.postDelayed(this, POLL_INTERVAL_MS)
+    @Volatile
+    private var destroyed = false
+
+    @Volatile
+    private var acceptingEvents = false
+
+    private val evaluate = Runnable {
+        val forceRepair = pendingForceRepair.getAndSet(false)
+        val report = stateMachine.tick(forceRepair)
+        if (!destroyed) updateNotification(report)
+        if (!shouldRemainRunning()) stopSelf()
+    }
+
+    private val systemStateReceiver = object : BroadcastReceiver() {
+        override fun onReceive(context: Context, intent: Intent) {
+            if (acceptingEvents) scheduleEvaluation(forceRepair = false)
         }
     }
 
@@ -38,53 +73,115 @@ class GuardService : Service() {
         workerHandler = Handler(workerThread.looper)
         stateMachine = GuardStateMachine(this)
         createChannel()
-        startForeground(NOTIFICATION_ID, notification(GuardStatus.Unknown))
-        workerHandler.post(tick)
+
+        val initial = GuardReport(
+            status = GuardStatus.Unknown,
+            probe = UsbAdbState(usbConnected = false, adbEnabled = false),
+            circuit = RootRuntime.get(this).circuit(),
+        )
+        startForeground(NOTIFICATION_ID, notification(initial.status))
+        notificationTracker.shouldNotify(initial.toNotificationState())
+        registerStateObservers()
     }
 
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        acceptingEvents = true
         when (intent?.action) {
             ACTION_STOP -> {
-                GuardPrefs.setServiceEnabled(this, false)
-                workerHandler.removeCallbacks(tick)
+                workerHandler.removeCallbacks(evaluate)
                 workerHandler.post {
                     val report = stateMachine.stop()
-                    updateNotification(report.status)
-                    stopSelf()
+                    if (!destroyed) updateNotification(report)
+                    if (!shouldRemainRunning()) stopSelfResult(startId)
                 }
-                return START_NOT_STICKY
+                return START_STICKY
             }
-            ACTION_REFRESH -> {
+
+            ACTION_RETRY_ROOT -> {
                 workerHandler.post {
-                    val report = stateMachine.tick(forceRepair = true)
-                    updateNotification(report.status)
+                    val report = stateMachine.retryRoot()
+                    if (!destroyed) updateNotification(report)
+                    if (report.result?.ok == true &&
+                        (GuardPrefs.serviceEnabled(this) || GuardPrefs.isGuarded(this))
+                    ) {
+                        scheduleEvaluation(forceRepair = false)
+                    } else if (!shouldRemainRunning()) {
+                        stopSelfResult(startId)
+                    }
                 }
             }
-            else -> {
+
+            ACTION_LOCK_NOW -> {
+                workerHandler.post {
+                    val report = stateMachine.lockNow()
+                    if (!destroyed) updateNotification(report)
+                    if (!shouldRemainRunning()) stopSelfResult(startId)
+                }
+            }
+
+            ACTION_REFRESH -> scheduleEvaluation(forceRepair = true)
+
+            ACTION_START -> {
                 GuardPrefs.setServiceEnabled(this, true)
-                workerHandler.post {
-                    val report = stateMachine.tick(forceRepair = true)
-                    updateNotification(report.status)
-                }
+                scheduleEvaluation(forceRepair = false)
+            }
+
+            else -> {
+                if (shouldRemainRunning()) scheduleEvaluation(forceRepair = false)
+                else stopSelfResult(startId)
             }
         }
-        return START_STICKY
+        return if (shouldRemainRunning()) START_STICKY else START_NOT_STICKY
     }
 
     override fun onDestroy() {
-        workerHandler.removeCallbacks(tick)
-        if (GuardPrefs.isGuarded(this)) {
-            workerHandler.post {
-                stateMachine.stop()
-                workerThread.quitSafely()
-            }
-        } else {
-            workerThread.quitSafely()
-        }
+        destroyed = true
+        acceptingEvents = false
+        unregisterStateObservers()
+        workerHandler.removeCallbacksAndMessages(null)
+        RootRuntime.shutdown()
+        workerThread.quitSafely()
         super.onDestroy()
     }
 
     override fun onBind(intent: Intent?): IBinder? = null
+
+    private fun scheduleEvaluation(forceRepair: Boolean) {
+        if (destroyed) return
+        if (forceRepair) pendingForceRepair.set(true)
+        workerHandler.removeCallbacks(evaluate)
+        workerHandler.post(evaluate)
+    }
+
+    private fun registerStateObservers() {
+        val filter = IntentFilter().apply {
+            addAction(AndroidUsbAdbStateReader.ACTION_USB_STATE)
+        }
+        if (Build.VERSION.SDK_INT >= 33) {
+            registerReceiver(systemStateReceiver, filter, RECEIVER_NOT_EXPORTED)
+        } else {
+            @Suppress("DEPRECATION")
+            registerReceiver(systemStateReceiver, filter)
+        }
+
+        adbObserver = object : ContentObserver(workerHandler) {
+            override fun onChange(selfChange: Boolean) {
+                if (acceptingEvents) scheduleEvaluation(forceRepair = false)
+            }
+        }
+        contentResolver.registerContentObserver(
+            Settings.Global.getUriFor(Settings.Global.ADB_ENABLED),
+            false,
+            adbObserver,
+        )
+    }
+
+    private fun unregisterStateObservers() {
+        runCatching { unregisterReceiver(systemStateReceiver) }
+        if (::adbObserver.isInitialized) {
+            runCatching { contentResolver.unregisterContentObserver(adbObserver) }
+        }
+    }
 
     private fun notification(status: GuardStatus): Notification {
         val openIntent = Intent(this, MainActivity::class.java)
@@ -120,18 +217,20 @@ class GuardService : Service() {
             GuardStatus.WaitingUsb -> R.string.notification_waiting_usb
             GuardStatus.WaitingAdb -> R.string.notification_waiting_adb
             GuardStatus.RootRequired -> R.string.notification_root_required
+            GuardStatus.RootUnavailable -> R.string.notification_root_unavailable
+            GuardStatus.CircuitOpen -> R.string.notification_circuit_open
             GuardStatus.RestoreFailed -> R.string.notification_restore_failed
             GuardStatus.Unknown -> R.string.notification_monitoring
         }
     )
 
-    private fun updateNotification(status: GuardStatus) {
+    private fun updateNotification(report: GuardReport) {
+        if (!notificationTracker.shouldNotify(report.toNotificationState())) return
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
-        manager.notify(NOTIFICATION_ID, notification(status))
+        manager.notify(NOTIFICATION_ID, notification(report.status))
     }
 
     private fun createChannel() {
-        if (Build.VERSION.SDK_INT < 26) return
         val manager = getSystemService(NOTIFICATION_SERVICE) as NotificationManager
         val channel = NotificationChannel(
             CHANNEL_ID,
@@ -141,12 +240,26 @@ class GuardService : Service() {
         manager.createNotificationChannel(channel)
     }
 
+    private fun shouldRemainRunning(): Boolean =
+        GuardPrefs.serviceEnabled(this) ||
+            GuardPrefs.isGuarded(this) ||
+            GuardPrefs.snapshotPending(this) ||
+            GuardPrefs.stopPending(this)
+
     companion object {
         const val ACTION_START = "io.github.nongfsq.usbdebugguard.action.START"
         const val ACTION_STOP = "io.github.nongfsq.usbdebugguard.action.STOP"
         const val ACTION_REFRESH = "io.github.nongfsq.usbdebugguard.action.REFRESH"
+        const val ACTION_RETRY_ROOT = "io.github.nongfsq.usbdebugguard.action.RETRY_ROOT"
+        const val ACTION_LOCK_NOW = "io.github.nongfsq.usbdebugguard.action.LOCK_NOW"
         private const val CHANNEL_ID = "protection"
         private const val NOTIFICATION_ID = 1001
-        private const val POLL_INTERVAL_MS = 3_000L
     }
 }
+
+private fun GuardReport.toNotificationState() = NotificationState(
+    status = status,
+    circuitOpen = circuit.open,
+    failureCount = circuit.failureCount,
+    lastOutcome = result?.outcome ?: circuit.lastOutcome,
+)

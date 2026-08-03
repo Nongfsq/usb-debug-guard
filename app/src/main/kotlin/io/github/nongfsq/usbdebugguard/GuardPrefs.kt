@@ -2,6 +2,7 @@ package io.github.nongfsq.usbdebugguard
 
 import android.content.Context
 import android.content.SharedPreferences
+import androidx.core.content.edit
 
 object GuardPrefs {
     private const val NAME = "guard"
@@ -76,13 +77,27 @@ object GuardPrefs {
         prefs(context).edit().putString("last_action", action).apply()
     }
 
+    fun snapshotPending(context: Context): Boolean =
+        prefs(context).getBoolean("snapshot_pending", isGuarded(context))
+
+    fun guardMutationStarted(context: Context): Boolean =
+        prefs(context).getBoolean("guard_mutation_started", isGuarded(context))
+
+    fun markGuardMutationStarted(context: Context) {
+        prefs(context).edit(commit = true) {
+            putBoolean("guard_mutation_started", true)
+        }
+    }
+
     fun saveSnapshot(context: Context, snapshot: DisplaySettingsSnapshot) {
-        prefs(context).edit()
-            .putString(SAVED_PREFIX + "stay_on", snapshot.stayOnWhilePluggedIn)
-            .putString(SAVED_PREFIX + "brightness_mode", snapshot.brightnessMode)
-            .putString(SAVED_PREFIX + "screen_brightness", snapshot.screenBrightness)
-            .putString(SAVED_PREFIX + "screen_off_timeout", snapshot.screenOffTimeout)
-            .apply()
+        prefs(context).edit(commit = true) {
+            putString(SAVED_PREFIX + "stay_on", snapshot.stayOnWhilePluggedIn)
+            putString(SAVED_PREFIX + "brightness_mode", snapshot.brightnessMode)
+            putString(SAVED_PREFIX + "screen_brightness", snapshot.screenBrightness)
+            putString(SAVED_PREFIX + "screen_off_timeout", snapshot.screenOffTimeout)
+            putBoolean("snapshot_pending", true)
+            putBoolean("guard_mutation_started", false)
+        }
     }
 
     fun loadSnapshot(context: Context): DisplaySettingsSnapshot {
@@ -93,5 +108,25 @@ object GuardPrefs {
             prefs.getString(SAVED_PREFIX + "screen_brightness", "120") ?: "120",
             prefs.getString(SAVED_PREFIX + "screen_off_timeout", "30000") ?: "30000",
         )
+    }
+
+    fun clearSnapshot(context: Context) {
+        prefs(context).edit(commit = true) {
+            remove(SAVED_PREFIX + "stay_on")
+            remove(SAVED_PREFIX + "brightness_mode")
+            remove(SAVED_PREFIX + "screen_brightness")
+            remove(SAVED_PREFIX + "screen_off_timeout")
+            putBoolean("snapshot_pending", false)
+            putBoolean("guard_mutation_started", false)
+        }
+    }
+
+    fun stopPending(context: Context): Boolean =
+        prefs(context).getBoolean("stop_pending", false)
+
+    fun setStopPending(context: Context, pending: Boolean) {
+        prefs(context).edit(commit = true) {
+            putBoolean("stop_pending", pending)
+        }
     }
 }

@@ -13,3 +13,9 @@ Please open a private security advisory on GitHub if the repository supports it.
 USB Debug Guard requires root to change display settings and send key events. It does not use Device Admin APIs and does not request `BIND_DEVICE_ADMIN`.
 
 The service exposes ADB control actions, but the service is protected by `android.permission.DUMP` so normal third-party apps cannot call it.
+
+## Updates
+
+Update checks are user initiated and query only the official GitHub Releases API over HTTPS. The app compares the release tag locally and opens the repository's fixed official release URL in the user's browser. It does not download or install APKs silently and does not request package-install permissions.
+
+Published APKs must retain the release signing certificate SHA-256 fingerprint documented in `docs/RELEASE.md`. A release signed by another key is not an in-place update and must not be presented as one.
