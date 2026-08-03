@@ -36,6 +36,7 @@ All notable user-visible changes are recorded here.
 - Pins the Gradle distribution SHA-256.
 - Restricts installer tooling to explicitly selected Android emulators.
 - Update checks are manual, HTTPS-only, bounded, and do not download or install APKs.
+- Starts a documented release-signing generation because the v0.1.2 private key was unavailable after the development-machine migration. v0.1.2 must be uninstalled before installing v0.1.3.
 
 ## [0.1.2] - 2026-06-04
 

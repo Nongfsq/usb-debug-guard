@@ -18,4 +18,4 @@ The service exposes ADB control actions, but the service is protected by `androi
 
 Update checks are user initiated and query only the official GitHub Releases API over HTTPS. The app compares the release tag locally and opens the repository's fixed official release URL in the user's browser. It does not download or install APKs silently and does not request package-install permissions.
 
-Published APKs must retain the release signing certificate SHA-256 fingerprint documented in `docs/RELEASE.md`. A release signed by another key is not an in-place update and must not be presented as one.
+Published APKs must use the active release signing certificate documented in `docs/RELEASE.md`. v0.1.3 starts a new signing generation because the v0.1.2 private key was unavailable; the release notes explicitly require uninstalling v0.1.2 before installing v0.1.3.
