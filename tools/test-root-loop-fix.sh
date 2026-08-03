@@ -83,6 +83,8 @@ if ! git check-ignore -q USB-Debug-Guard-Incident-2026-08-01/README.md; then
     exit 1
 fi
 
+tools/check-public-tree.sh
+
 ./gradlew --no-daemon testDebugUnitTest
 
 echo "PASS: root-loop static guards and JVM regression tests"
