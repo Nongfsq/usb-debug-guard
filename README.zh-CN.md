@@ -47,7 +47,7 @@ USB 调试守护是一款面向长时间 USB 调试的 Android Root 工具。它
 
 从 [F-Droid](https://f-droid.org/packages/io.github.nongfsq.usbdebugguard/) 安装，或从 [GitHub Releases](https://github.com/Nongfsq/usb-debug-guard/releases/latest) 下载 APK。
 
-F-Droid 版与 GitHub 版使用不同的签名密钥，Android 不能用其中一个覆盖更新另一个；如需切换，请先卸载。F-Droid 版不包含应用内检查更新，更新由 F-Droid 负责。
+F-Droid 发布的是本项目用自己的密钥签名的 APK，因此从 v0.1.4 起，F-Droid 版和 GitHub 版可以互相覆盖更新。F-Droid 版不包含应用内检查更新，更新由 F-Droid 负责。
 
 ### 从 v0.1.2 升级
 
