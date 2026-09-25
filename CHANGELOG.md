@@ -2,7 +2,7 @@
 
 All notable user-visible changes are recorded here.
 
-## [Unreleased]
+## [0.1.4] - 2026-09-24
 
 ### Added
 
@@ -13,6 +13,7 @@ All notable user-visible changes are recorded here.
 
 - APKs no longer embed Google's encrypted dependency metadata block.
 - README shows the logo and an F-Droid badge.
+- Version advanced to `versionCode 5` / `versionName 0.1.4`.
 
 ## [0.1.3] - 2026-08-03
 
