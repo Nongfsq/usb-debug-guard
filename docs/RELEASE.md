@@ -30,7 +30,20 @@ Uninstalling clears the app's local preferences. The in-app update page and v0.1
 4. Run `./gradlew lint assembleDebug assembleRelease`.
 5. Sign the release APK with the active v0.1.3+ key outside the repository.
 6. Verify APK signature against the active fingerprint, manifest permissions, version metadata, zip alignment, and SHA-256.
-7. Tag the exact commit and publish the signed APK, `SHA256SUMS`, release notes, and public brand assets.
+7. Tag the exact commit and publish the signed APK, the signed F-Droid APK (see below), `SHA256SUMS`, release notes, and public brand assets.
 8. Confirm the GitHub `releases/latest` endpoint returns the new tag so the in-app update checker can discover it.
+
+## F-Droid reproducible build
+
+F-Droid builds each tag with `-PupdateCheck=false`, compares the result with `usb-debug-guard-v<version>-fdroid.apk` from the GitHub release, and publishes that file with its original signature only if everything except the signature is identical. The recipe lives in fdroiddata as `metadata/io.github.nongfsq.usbdebugguard.yml`. Its `binary` and `AllowedAPKSigningKeys` fields point at this file and at the active certificate.
+
+To produce the file:
+
+1. Build from a fresh `git clone` checked out at the tag, not from a `git worktree`. AGP embeds the Git revision in `META-INF/version-control-info.textproto` and cannot read it from a worktree.
+2. Run `./gradlew assembleRelease -PupdateCheck=false`.
+3. Sign `app-release-unsigned.apk` directly. Do not run `zipalign` first, and pass `--v1-signing-enabled false --alignment-preserved true` to `apksigner sign`. Any change to the ZIP layout breaks F-Droid's signature copy.
+4. Name the result `usb-debug-guard-v<version>-fdroid.apk` and add it to `SHA256SUMS`.
+
+F-Droid's auto-update creates new builds from new tags. Each release also needs `fastlane/metadata/android/*/changelogs/<versionCode>.txt`.
 
 After every release, back up the active keystore to encrypted offline storage; Keychain alone is not a keystore backup.
