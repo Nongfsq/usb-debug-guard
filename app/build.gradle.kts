@@ -14,6 +14,11 @@ android {
         versionCode = 4
         versionName = "0.1.3"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
+
+        // F-Droid builds pass -PupdateCheck=false: F-Droid delivers updates itself,
+        // and GitHub APKs are signed with a different key.
+        val updateCheckEnabled = providers.gradleProperty("updateCheck").orElse("true").get().toBoolean()
+        buildConfigField("boolean", "UPDATE_CHECK_ENABLED", updateCheckEnabled.toString())
     }
 
     buildFeatures {
@@ -24,6 +29,12 @@ android {
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_17
         targetCompatibility = JavaVersion.VERSION_17
+    }
+
+    dependenciesInfo {
+        // The encrypted dependency metadata block is unreadable to F-Droid's scanner.
+        includeInApk = false
+        includeInBundle = false
     }
 
     buildTypes {

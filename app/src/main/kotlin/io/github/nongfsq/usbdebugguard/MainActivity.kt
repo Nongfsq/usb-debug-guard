@@ -319,7 +319,7 @@ fun GuardScreen() {
                     )
                 }
             }
-            item {
+            if (BuildConfig.UPDATE_CHECK_ENABLED) item {
                 SectionTitle(R.string.section_updates)
                 Card(shape = RoundedCornerShape(24.dp)) {
                     ListItem(

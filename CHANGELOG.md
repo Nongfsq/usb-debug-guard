@@ -2,6 +2,18 @@
 
 All notable user-visible changes are recorded here.
 
+## [Unreleased]
+
+### Added
+
+- F-Droid store metadata (English and Simplified Chinese) under `fastlane/`.
+- `-PupdateCheck=false` Gradle property that hides the in-app update check for F-Droid builds.
+
+### Changed
+
+- APKs no longer embed Google's encrypted dependency metadata block.
+- README shows the logo and an F-Droid badge.
+
 ## [0.1.3] - 2026-08-03
 
 ### Added

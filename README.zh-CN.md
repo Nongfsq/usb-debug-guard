@@ -1,4 +1,17 @@
-# USB 调试守护
+<p align="center">
+  <img src="docs/assets/logo.svg" alt="USB 调试守护 logo" width="128" height="128">
+</p>
+
+<h1 align="center">USB 调试守护</h1>
+
+<p align="center">
+  <a href="https://f-droid.org/packages/io.github.nongfsq.usbdebugguard/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on-zh-cn.png" alt="从 F-Droid 获取" height="80"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Nongfsq/usb-debug-guard/releases/latest"><img src="https://img.shields.io/github/v/release/Nongfsq/usb-debug-guard" alt="最新版本"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/Nongfsq/usb-debug-guard" alt="许可证"></a>
+</p>
 
 USB 调试守护是一款面向长时间 USB 调试的 Android Root 工具。它会在保持 ADB 可连接的同时保护屏幕，并在停止保护后恢复原来的显示设置。
 
@@ -18,7 +31,7 @@ USB 调试守护是一款面向长时间 USB 调试的 Android Root 工具。它
 - 可在 USB 断开后锁定设备。
 - 仅在用户启用守护后运行前台服务。
 - 支持英文和简体中文。
-- 仅在用户点击“检查更新”时查询 GitHub Releases，不在后台自动检查。
+- GitHub 版仅在用户点击“检查更新”时查询 GitHub Releases，不在后台自动检查。
 - Root 被拒绝、超时、异常或进程清理失败后停止自动 Root 操作，避免无限生成 `su` 进程。
 
 ## 使用要求
@@ -32,7 +45,9 @@ USB 调试守护是一款面向长时间 USB 调试的 Android Root 工具。它
 
 ## 安装
 
-从 [GitHub Releases](https://github.com/Nongfsq/usb-debug-guard/releases/latest) 下载 APK，并安装到 Android 设备。
+从 [F-Droid](https://f-droid.org/packages/io.github.nongfsq.usbdebugguard/) 安装，或从 [GitHub Releases](https://github.com/Nongfsq/usb-debug-guard/releases/latest) 下载 APK。
+
+F-Droid 版与 GitHub 版使用不同的签名密钥，Android 不能用其中一个覆盖更新另一个；如需切换，请先卸载。F-Droid 版不包含应用内检查更新，更新由 F-Droid 负责。
 
 ### 从 v0.1.2 升级
 

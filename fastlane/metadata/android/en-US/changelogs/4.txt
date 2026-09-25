@@ -1,0 +1,5 @@
+Safety release.
+- Stops automatic Root work after a denial, timeout, exception, or failed process cleanup.
+- USB power alone no longer starts protection; only USB data connections do.
+- Display settings are restored through a crash-consistent snapshot.
+- USB and ADB state now come from system events instead of polling.

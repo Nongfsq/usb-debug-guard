@@ -1,0 +1,20 @@
+<p>USB 调试守护是一款面向长时间 USB 调试的 Android Root 工具。它会在保持 ADB 可连接的同时保护屏幕，并在停止保护后恢复原来的显示设置。</p>
+
+<p><b>功能</b></p>
+<ul>
+<li>通过 Android 系统 API 检测 USB 数据连接和 ADB 状态，常态探测不调用 Root。</li>
+<li>支持守护时灭屏；对灭屏后 ADB 不稳定的设备，也支持最低亮度常亮模式。</li>
+<li>保存并恢复原来的显示设置。</li>
+<li>可在 USB 断开后锁定设备。</li>
+<li>仅在用户启用守护后运行前台服务。</li>
+<li>Root 被拒绝、超时、异常或进程清理失败后停止自动 Root 操作，避免无限生成 <code>su</code> 进程。</li>
+<li>支持英文和简体中文。</li>
+</ul>
+
+<p><b>使用要求</b></p>
+<ul>
+<li>可正常工作的 Root 管理器，例如 Magisk 或 KernelSU，并能运行 Android 的 <code>settings</code> 和 <code>input</code> 命令。</li>
+<li>USB 数据连接。仅供电的充电器或充电线不会触发保护。</li>
+</ul>
+
+<p>不同设备、厂商系统和 Root 管理器的行为可能不同。用于无人值守任务前，请先在非关键设备上验证。</p>

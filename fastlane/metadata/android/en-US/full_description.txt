@@ -1,0 +1,20 @@
+<p>USB Debug Guard is a root-only tool for long USB debugging sessions. It protects the display while keeping ADB reachable, then restores the previous display settings when protection stops.</p>
+
+<p><b>Features</b></p>
+<ul>
+<li>Detects USB data connections and ADB state through Android system APIs, without routine Root polling.</li>
+<li>Turns the screen off while keeping ADB reachable, or keeps it awake at minimum brightness for devices that lose ADB when the display sleeps.</li>
+<li>Saves and restores the previous display settings.</li>
+<li>Can lock the device after USB disconnects.</li>
+<li>Runs only after you enable its foreground service.</li>
+<li>Stops automatic Root work after a denial, timeout, exception, or process cleanup failure, preventing an endless <code>su</code> retry loop.</li>
+<li>English and Simplified Chinese.</li>
+</ul>
+
+<p><b>Requirements</b></p>
+<ul>
+<li>A working Root manager such as Magisk or KernelSU, able to run Android <code>settings</code> and <code>input</code> commands.</li>
+<li>A USB data connection. A charge-only cable or charger does not start protection.</li>
+</ul>
+
+<p>Root behavior varies between devices, OEM firmware, and Root managers. Test the app on a non-critical device before relying on it for unattended sessions.</p>
