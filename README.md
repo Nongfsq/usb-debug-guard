@@ -1,4 +1,17 @@
-# USB Debug Guard
+<p align="center">
+  <img src="docs/assets/logo.svg" alt="USB Debug Guard logo" width="128" height="128">
+</p>
+
+<h1 align="center">USB Debug Guard</h1>
+
+<p align="center">
+  <a href="https://f-droid.org/packages/io.github.nongfsq.usbdebugguard/"><img src="https://fdroid.gitlab.io/artwork/badge/get-it-on.png" alt="Get it on F-Droid" height="80"></a>
+</p>
+
+<p align="center">
+  <a href="https://github.com/Nongfsq/usb-debug-guard/releases/latest"><img src="https://img.shields.io/github/v/release/Nongfsq/usb-debug-guard" alt="Latest release"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/github/license/Nongfsq/usb-debug-guard" alt="License"></a>
+</p>
 
 USB Debug Guard is a root-only Android tool for long USB debugging sessions. It protects the display while keeping ADB available, then restores the previous display settings when protection stops.
 
@@ -18,7 +31,7 @@ USB Debug Guard is a root-only Android tool for long USB debugging sessions. It 
 - Can lock the device after USB disconnects.
 - Runs only after the user enables its foreground service.
 - Supports English and Simplified Chinese.
-- Checks GitHub Releases only when the user taps **Check updates**; it does not perform background update checks.
+- GitHub builds check GitHub Releases only when the user taps **Check updates**; they do not perform background update checks.
 - Stops automatic Root work after a denial, timeout, exception, or process cleanup failure, preventing an endless `su` retry loop.
 
 ## Requirements
@@ -32,7 +45,9 @@ Root behavior varies between devices, OEM firmware, and Root managers. Test the 
 
 ## Install
 
-Download the APK from [GitHub Releases](https://github.com/Nongfsq/usb-debug-guard/releases/latest) and install it on the Android device.
+Install from [F-Droid](https://f-droid.org/packages/io.github.nongfsq.usbdebugguard/), or download the APK from [GitHub Releases](https://github.com/Nongfsq/usb-debug-guard/releases/latest).
+
+F-Droid and GitHub builds are signed with different keys, so Android cannot update one with the other. To switch, uninstall first. The F-Droid build leaves out the in-app update check because F-Droid delivers updates itself.
 
 ### Upgrading from v0.1.2
 

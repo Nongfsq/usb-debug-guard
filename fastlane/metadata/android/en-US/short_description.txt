@@ -1,0 +1,1 @@
+Turn the screen off during long USB debugging sessions while keeping ADB alive
