@@ -2,6 +2,13 @@
 
 All notable user-visible changes are recorded here.
 
+## [0.1.5] - 2026-09-25
+
+### Changed
+
+- Release builds now use R8 code and resource shrinking; the APK drops from about 12.6 MB to 1.1 MB.
+- Version advanced to `versionCode 6` / `versionName 0.1.5`.
+
 ## [0.1.4] - 2026-09-24
 
 ### Added
