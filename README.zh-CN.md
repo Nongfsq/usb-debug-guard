@@ -101,6 +101,12 @@ APK 会生成到 `app/build/outputs/apk/debug/app-debug.apk`。
 - [更新日志](CHANGELOG.md)
 - [发布流程](docs/RELEASE.md)
 
+## 支持
+
+如果这个项目对你有用，可以请我喝杯咖啡。
+
+<a href="https://buymeacoffee.com/frankmenger"><img src="https://cdn.buymeacoffee.com/buttons/v2/default-yellow.png" alt="Buy Me a Coffee" height="44"></a>
+
 ## 许可证
 
 [Apache License 2.0](LICENSE)
