@@ -1,0 +1,1 @@
+The F-Droid build no longer asks for network access: it has no update check, so it never needed the INTERNET permission. Guard behavior is unchanged.

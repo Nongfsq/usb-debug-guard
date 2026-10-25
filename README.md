@@ -47,7 +47,7 @@ Root behavior varies between devices, OEM firmware, and Root managers. Test the 
 
 Install from [F-Droid](https://f-droid.org/packages/io.github.nongfsq.usbdebugguard/), or download the APK from [GitHub Releases](https://github.com/Nongfsq/usb-debug-guard/releases/latest).
 
-F-Droid publishes the APK signed with this project's own key, so F-Droid and GitHub builds from v0.1.4 onward can update each other. The F-Droid build leaves out the in-app update check because F-Droid delivers updates itself.
+F-Droid publishes the APK signed with this project's own key, so F-Droid and GitHub builds from v0.1.4 onward can update each other. The F-Droid build leaves out the in-app update check because F-Droid delivers updates itself, and from v0.1.6 it has no network permission.
 
 ### Upgrading from v0.1.2
 

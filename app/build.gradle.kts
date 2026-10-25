@@ -3,6 +3,10 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
+// F-Droid builds pass -PupdateCheck=false: F-Droid delivers updates itself,
+// and GitHub APKs are signed with a different key.
+val updateCheckEnabled = providers.gradleProperty("updateCheck").orElse("true").get().toBoolean()
+
 android {
     namespace = "io.github.nongfsq.usbdebugguard"
     compileSdk = 36
@@ -11,13 +15,10 @@ android {
         applicationId = "io.github.nongfsq.usbdebugguard"
         minSdk = 26
         targetSdk = 36
-        versionCode = 6
-        versionName = "0.1.5"
+        versionCode = 7
+        versionName = "0.1.6"
         testInstrumentationRunner = "androidx.test.runner.AndroidJUnitRunner"
 
-        // F-Droid builds pass -PupdateCheck=false: F-Droid delivers updates itself,
-        // and GitHub APKs are signed with a different key.
-        val updateCheckEnabled = providers.gradleProperty("updateCheck").orElse("true").get().toBoolean()
         buildConfigField("boolean", "UPDATE_CHECK_ENABLED", updateCheckEnabled.toString())
     }
 
@@ -45,6 +46,15 @@ android {
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro"
             )
+        }
+    }
+}
+
+androidComponents {
+    onVariants { variant ->
+        // The update check is the app's only network use, so builds without it drop INTERNET.
+        if (!updateCheckEnabled) {
+            variant.sources.manifests.addStaticManifestFile("src/noUpdateCheck/AndroidManifest.xml")
         }
     }
 }

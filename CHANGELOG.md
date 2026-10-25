@@ -2,6 +2,13 @@
 
 All notable user-visible changes are recorded here.
 
+## [0.1.6] - 2026-10-25
+
+### Changed
+
+- F-Droid builds (`-PupdateCheck=false`) no longer request the `INTERNET` permission, since the update check was their only network use.
+- Version advanced to `versionCode 7` / `versionName 0.1.6`.
+
 ## [0.1.5] - 2026-09-25
 
 ### Changed

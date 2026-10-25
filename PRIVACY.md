@@ -6,6 +6,7 @@ USB Debug Guard is a primarily local Android utility.
 - It connects to `api.github.com` only when the user taps **Check updates**.
 - It opens `github.com/Nongfsq/usb-debug-guard/releases/latest` only when the user chooses to view an available release.
 - It does not perform automatic or background update checks.
+- The F-Droid build has no update check and, from v0.1.6, does not request the `INTERNET` permission.
 - It does not upload logs.
 - It does not store personal data.
 - It stores only local preferences needed for the guard, such as the enabled state, selected mode, and saved display settings used for restore.
